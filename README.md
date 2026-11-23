@@ -46,7 +46,9 @@ npm test
 
 ## Deploy
 
-This is a static site deployed on Vercel from the repository root. No build step, server, or database is required. `vercel.json` sets the security headers (including a Content Security Policy) and long-lived caching for the self-hosted fonts.
+The site is published via GitHub Pages at https://ny0r.github.io/backerfee/. Pushes to `main` automatically run the `.github/workflows/pages.yml` workflow, which tests and deploys the static site. GitHub Pages must use **GitHub Actions** as its build and deployment source.
+
+The site can also be deployed on Vercel from the repository root. No build step, server, or database is required. `vercel.json` sets security headers (including a Content Security Policy) and long-lived caching for the self-hosted fonts.
 
 ## Offline and install
 
