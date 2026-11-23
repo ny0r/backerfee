@@ -1,14 +1,15 @@
 /* Offline support. Network-first so a new deploy is always picked up (and the
  * in-app update notifier keeps working); the cache is only a fallback. */
-const CACHE = 'backerfee-v1';
+const BASE = self.registration.scope;
+const CACHE = 'backerfee-v2-' + new URL(BASE).pathname;
 const SHELL = [
-  '/', '/index.html', '/style.css', '/script.js', '/calculator-utils.js',
-  '/ui-enhancements.js', '/value-hints.js', '/update-notifier.js', '/pwa.js',
-  '/fonts/fonts.css', '/fonts/poppins-400.woff', '/fonts/poppins-500.woff',
-  '/fonts/poppins-600.woff', '/fonts/poppins-700.woff',
-  '/mascots/afro-directions.webp', '/mascots/afro-reactions.webp',
-  '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'
-];
+  './', './index.html', './style.css', './script.js', './calculator-utils.js',
+  './ui-enhancements.js', './value-hints.js', './update-notifier.js', './pwa.js',
+  './fonts/fonts.css', './fonts/poppins-400.woff', './fonts/poppins-500.woff',
+  './fonts/poppins-600.woff', './fonts/poppins-700.woff',
+  './mascots/afro-directions.webp', './mascots/afro-reactions.webp',
+  './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png'
+].map((path) => new URL(path, BASE).href);
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -24,7 +25,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
-  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+  if (request.method !== 'GET' || !request.url.startsWith(BASE)) return;
   event.respondWith(
     fetch(request)
       .then((response) => {
@@ -34,6 +35,6 @@ self.addEventListener('fetch', (event) => {
         }
         return response;
       })
-      .catch(() => caches.match(request, { ignoreSearch: true }).then((hit) => hit || caches.match('/index.html')))
+      .catch(() => caches.match(request, { ignoreSearch: true }).then((hit) => hit || caches.match(new URL('./index.html', BASE).href)))
   );
 });
